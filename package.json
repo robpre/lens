@@ -20,7 +20,7 @@
     "release": "bump --tag --push --prompt",
     "predeploy": "npm run build",
     "deploy": "npm run deploy:only",
-    "deploy:only": "gh-pages -d build/ -m \"deploy ${npm_package_version}\"",
+    "deploy:only": "gh-pages -d build/ -m \"deploy ${npm_package_version}\" -r ${npm_package_repository_url}",
     "start": "react-scripts start",
     "build": "react-scripts build",
     "test": "react-scripts test --env=jsdom",
