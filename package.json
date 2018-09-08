@@ -1,7 +1,11 @@
 {
   "name": "dyslexic-lens",
   "version": "0.1.4",
-  "homepage": "http://rpprroger.github.com/dyslexic-lens",
+  "homepage": "https://rpprroger.github.com/dyslexic-lens",
+  "repository": {
+    "type": "git",
+    "url": "ssh://git@github.com/RpprRoger/dyslexic-lens"
+  },
   "private": true,
   "dependencies": {
     "react": "16.5.0",
