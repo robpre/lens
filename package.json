@@ -3,9 +3,12 @@
   "version": "0.1.0",
   "private": true,
   "dependencies": {
-    "react": "^16.5.0",
-    "react-dom": "^16.5.0",
-    "react-scripts": "1.1.5"
+    "react": "16.5.0",
+    "react-dom": "16.5.0"
+  },
+  "devDependencies": {
+    "react-scripts": "1.1.5",
+    "gh-pages": "1.2.0"
   },
   "scripts": {
     "start": "react-scripts start",
