@@ -1,14 +1,20 @@
 language: node_js
 cache:
   directories:
-    - node_modules
+  - node_modules
 install: npm install
 script:
-  - echo -e $DEPLOY_ID_RSA > ~/.ssh/id_rsa
-  - echo -e $DEPLOY_ID_RSA_PUB > ~/.ssh/id_rsa.pub
-  - npm run build
+- npm run build
+before_deploy:
+- openssl aes-256-cbc -K $encrypted_36ab605b977f_key -iv $encrypted_36ab605b977f_iv
+  -in keys.tar.enc -out keys.tar -d
+- tar xvf keys.tar
+- mv id_rsa ~/.ssh/
+- mv id_rsa.pub ~/.ssh/
 deploy:
+  skip_cleaup: true
   provider: script
-  script: "npm run deploy:only"
+  script: npm run deploy:only
   on:
     tags: true
+before_install:
