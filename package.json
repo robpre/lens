@@ -1,6 +1,6 @@
 {
   "name": "dyslexic-lens",
-  "version": "0.1.2-pre",
+  "version": "0.1.2",
   "homepage": "http://rpprroger.github.com/dyslexic-lens",
   "private": true,
   "dependencies": {
