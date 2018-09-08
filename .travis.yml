@@ -1,4 +1,7 @@
 language: node_js
+branches:
+  only:
+    - /^v\d+\.\d+\.\d+(-\S*)?$/ # only build tags (in the form v<semver version>)
 cache:
   directories:
   - node_modules
@@ -17,4 +20,3 @@ deploy:
   script: npm run deploy:only
   on:
     tags: true
-before_install:
