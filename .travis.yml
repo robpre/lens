@@ -12,7 +12,7 @@ before_deploy:
 - mv id_rsa ~/.ssh/
 - mv id_rsa.pub ~/.ssh/
 deploy:
-  skip_cleaup: true
+  skip_cleanup: true
   provider: script
   script: npm run deploy:only
   on:
