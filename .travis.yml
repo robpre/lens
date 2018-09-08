@@ -1,0 +1,14 @@
+language: node_js
+cache:
+  directories:
+    - node_modules
+install: npm install
+script:
+  - echo -e $DEPLOY_ID_RSA > ~/.ssh/id_rsa
+  - echo -e $DEPLOY_ID_RSA_PUB > ~/.ssh/id_rsa.pub
+  - npm run build
+deploy:
+  provider: script
+  script: "npm run deploy:only"
+  on:
+    tags: true

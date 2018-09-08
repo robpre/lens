@@ -13,7 +13,8 @@
   },
   "scripts": {
     "predeploy": "npm run build",
-    "deploy": "gh-pages -d build/ -m \"deploy ${npm_package_version}\"",
+    "deploy": "npm run deploy:only",
+    "deploy:only": "gh-pages -d build/ -m \"deploy ${npm_package_version}\"",
     "start": "react-scripts start",
     "build": "react-scripts build",
     "test": "react-scripts test --env=jsdom",
