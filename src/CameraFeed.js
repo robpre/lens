@@ -1,4 +1,6 @@
-import React, { Component, createRef } from 'react';
+import React, { Fragment, Component, createRef } from 'react';
+
+const RenderError = ({ error }) => (error && <pre style={{ color: 'red' }}>{`${error.message}\n${error.stack || ''}`}</pre>);
 
 export default class CameraFeed extends Component {
   static defaultProps = {
@@ -9,6 +11,10 @@ export default class CameraFeed extends Component {
     super(props);
 
     this.video = createRef();
+
+    this.state = {
+      error: null
+    };
   }
 
   async componentDidMount() {
@@ -24,12 +30,14 @@ export default class CameraFeed extends Component {
         video: {
           facingMode: {
             ideal: 'environment'
-          }
+          },
+          width: { min: 1280, ideal: 1920 }
         }
       });
-    } catch(err) {
+    } catch(error) {
       alert('Something went wrong, please try again.');
-      throw err;
+
+      return this.setState({ error });
     }
 
     this.video.current.srcObject = stream;
@@ -39,7 +47,10 @@ export default class CameraFeed extends Component {
 
   render() {
     return (
-      <video style={{ display: 'none' }} autoPlay ref={this.video} />
+      <Fragment>
+        <RenderError error={this.state.error} />
+        <video style={{ display: 'none' }} autoPlay ref={this.video} />
+      </Fragment>
     );
   }
 }

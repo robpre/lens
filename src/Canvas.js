@@ -1,22 +1,6 @@
 import React, { createRef, Component, Fragment } from 'react';
 import CameraFeed from './CameraFeed';
 
-// function maintainAspect(srcSize, dstSize) {
-//   const srcRatio = srcSize.width / srcSize.height;
-//   const dstRatio = dstSize.width / dstSize.height;
-//   if (dstRatio > srcRatio) {
-//     return {
-//       width:  dstSize.height * srcRatio,
-//       height: dstSize.height
-//     };
-//   } else {
-//     return {
-//       width:  dstSize.width,
-//       height: dstSize.width / srcRatio
-//     };
-//   }
-// }
-
 export default class Canvas extends Component {
   constructor(props) {
     super(props);
@@ -38,14 +22,17 @@ export default class Canvas extends Component {
       } = this;
       const ctx = this.canvas.current.getContext('2d');
 
+      canvas.width = canvas.scrollWidth;
+      canvas.height = canvas.scrollHeight;
+
       if (video.readyState === video.HAVE_ENOUGH_DATA) {
         // scale and horizontally center the camera image
-        // const videoSize = { width: video.videoWidth, height: video.videoHeight };
-        // const canvasSize = { width: canvas.width, height: canvas.height };
-        // const renderSize = maintainAspect(videoSize, canvasSize);
-        // const xOffset = (canvasSize.width - renderSize.width) / 2;
+        const sourceX = Math.max((video.videoWidth - canvas.width) / 2, 0);
+        const sourceY = Math.max((video.videoHeight - canvas.height) / 2, 0);
+        const sourceWidth = canvas.width;
+        const sourceHeight = canvas.height;
 
-        ctx.drawImage(video, 0, 0, canvas.width, canvas.height);
+        ctx.drawImage(video, sourceX, sourceY, sourceWidth, sourceHeight, 0, 0, canvas.width, canvas.height);
       }
     }
 
