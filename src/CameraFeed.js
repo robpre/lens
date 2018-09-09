@@ -1,6 +1,11 @@
 import React, { Fragment, Component, createRef } from 'react';
+import styled from 'styled-components';
 
 const RenderError = ({ error }) => (error && <pre style={{ color: 'red' }}>{`${error.message}\n${error.stack || ''}`}</pre>);
+
+const Video = styled.video`
+  display: none;
+`;
 
 export default class CameraFeed extends Component {
   static defaultProps = {
@@ -49,7 +54,7 @@ export default class CameraFeed extends Component {
     return (
       <Fragment>
         <RenderError error={this.state.error} />
-        <video style={{ display: 'none' }} autoPlay ref={this.video} playsInline />
+        <Video autoPlay innerRef={this.video} playsInline />
       </Fragment>
     );
   }

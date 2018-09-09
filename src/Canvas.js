@@ -1,5 +1,12 @@
 import React, { createRef, Component, Fragment } from 'react';
+import styled from 'styled-components';
+
 import CameraFeed from './CameraFeed';
+
+const StyledCanvas = styled.canvas`
+  width: 100%;
+  height: 100%;
+`;
 
 export default class Canvas extends Component {
   constructor(props) {
@@ -51,7 +58,7 @@ export default class Canvas extends Component {
     return (
       <Fragment>
         <CameraFeed onVideoFeed={this.handleFeed} />
-        <canvas style={{ width: '100%', height: '100%' }} ref={this.canvas} />
+        <StyledCanvas innerRef={this.canvas} />
       </Fragment>
     );
   }
