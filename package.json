@@ -9,7 +9,8 @@
   "private": true,
   "dependencies": {
     "react": "16.5.0",
-    "react-dom": "16.5.0"
+    "react-dom": "16.5.0",
+    "webrtc-adapter": "^6.3.2"
   },
   "devDependencies": {
     "react-scripts": "1.1.5",
