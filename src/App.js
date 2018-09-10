@@ -74,11 +74,15 @@ class App extends Component {
   };
 
   componentDidMount() {
-    screenfull.on('change', this.handleFullscreenChange);
+    if (screenfull.enabled) {
+      screenfull.on('change', this.handleFullscreenChange);
+    }
   }
 
   componentWillUnmount() {
-    screenfull.off('change', this.handleFullscreenChange);
+    if (screenfull.enabled) {
+      screenfull.off('change', this.handleFullscreenChange);
+    }
   }
 
   render() {
