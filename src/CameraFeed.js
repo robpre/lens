@@ -4,7 +4,9 @@ import styled from 'styled-components';
 const RenderError = ({ error }) => (error && <pre style={{ color: 'red' }}>{`${error.message}\n${error.stack || ''}`}</pre>);
 
 const Video = styled.video`
-  display: none;
+  position: absolute;
+  top: 0;
+  left: 0;
 `;
 
 export default class CameraFeed extends Component {
@@ -57,7 +59,7 @@ export default class CameraFeed extends Component {
     return (
       <Fragment>
         <RenderError error={this.state.error} />
-        <Video autoPlay innerRef={this.video} playsInline controls muted />
+        <Video autoPlay playsInline innerRef={this.video} />
       </Fragment>
     );
   }

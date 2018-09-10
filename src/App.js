@@ -19,10 +19,14 @@ const Container = styled.div`
   height: 100%;
   position: relative;
   font-size: 0;
+  overflow: hidden;
 `;
 
 const Controls = styled.div`
   width: 100%;
+  top: 0;
+  left: 0;
+  z-index: 1;
   position: absolute;
   display: flex;
   justify-content: space-between;

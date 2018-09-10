@@ -7,6 +7,7 @@ import renderVideoToCanvas from './lib/renderVideoToCanvas';
 const StyledCanvas = styled.canvas`
   width: 100%;
   height: 100%;
+  position: relative;
 `;
 
 export default class Canvas extends Component {
@@ -35,9 +36,7 @@ export default class Canvas extends Component {
 
       renderVideoToCanvas(video, canvas);
 
-      const ctx = canvas.getContext('2d');
-
-
+      // const ctx = canvas.getContext('2d');
     }
 
     this.raf = requestAnimationFrame(this.update);
@@ -47,8 +46,6 @@ export default class Canvas extends Component {
     this.video = video;
   };
 
-
-
   componentWillUnmount() {
     cancelAnimationFrame(this.raf);
   }
@@ -57,7 +54,7 @@ export default class Canvas extends Component {
     return (
       <Fragment>
         <CameraFeed onVideoFeed={this.handleFeed} />
-        <StyledCanvas  innerRef={this.canvas} />
+        <StyledCanvas innerRef={this.canvas} />
       </Fragment>
     );
   }
