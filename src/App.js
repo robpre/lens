@@ -9,7 +9,7 @@ import styled from 'styled-components';
 import hexToHsl from 'hex-to-hsl';
 import CirclePicker from 'react-color/lib/Circle';
 
-import Canvas from './Canvas';
+import Canvas from './CameraCanvas';
 
 const hues = ['#f44336', '#e91e63', '#9c27b0', '#673ab7', '#3f51b5', '#2196f3', '#03a9f4', '#00bcd4', '#009688', '#4caf50', '#8bc34a', '#cddc39', '#ffeb3b', '#ffc107', '#ff9800', '#ff5722', '#795548', '#607d8b']
   .map(hex => `hsl(${hexToHsl(hex)[0]}, 100%, 87.5%)`);

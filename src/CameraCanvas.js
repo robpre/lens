@@ -1,16 +1,10 @@
 import React, { createRef, Component, Fragment } from 'react';
-import styled from 'styled-components';
 
 import CameraFeed from './CameraFeed';
 import renderVideoToCanvas from './lib/renderVideoToCanvas';
+import TouchableCanvas from './TouchableCanvas';
 
-const StyledCanvas = styled.canvas`
-  width: 100%;
-  height: 100%;
-  position: relative;
-`;
-
-export default class Canvas extends Component {
+export default class CameraCanvas extends Component {
   constructor(props) {
     super(props);
 
@@ -36,7 +30,16 @@ export default class Canvas extends Component {
 
       renderVideoToCanvas(video, canvas);
 
-      // const ctx = canvas.getContext('2d');
+      const ctx = canvas.getContext('2d');
+
+      if (this.points) {
+        ctx.fillStyle = 'red';
+        for(let i = 0; i < this.points.length; i++) {
+          const { x, y } = this.points[i];
+
+          ctx.fillRect(x, y, 5, 5);
+        }
+      }
     }
 
     this.raf = requestAnimationFrame(this.update);
@@ -44,6 +47,14 @@ export default class Canvas extends Component {
 
   handleFeed = video => {
     this.video = video;
+  };
+
+  handleContactMove = ({ start, location }) => {
+    if (start) {
+      this.points = [];
+    }
+
+    this.points.push(location);
   };
 
   componentWillUnmount() {
@@ -54,7 +65,7 @@ export default class Canvas extends Component {
     return (
       <Fragment>
         <CameraFeed onVideoFeed={this.handleFeed} />
-        <StyledCanvas innerRef={this.canvas} />
+        <TouchableCanvas innerRef={this.canvas} onContactMove={this.handleContactMove} />
       </Fragment>
     );
   }
