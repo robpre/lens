@@ -1,4 +1,4 @@
-import React, { Component, createRef } from 'react';
+import React, { Component } from 'react';
 import IconButton from '@material-ui/core/IconButton';
 import Modal from '@material-ui/core/Modal';
 import Create from '@material-ui/icons/Create';
@@ -40,8 +40,6 @@ class App extends Component {
   constructor(props) {
     super(props);
 
-    this.containerRef = createRef();
-
     this.state = {
       fullscreen: false,
       modalOpen: false,
@@ -49,14 +47,10 @@ class App extends Component {
   }
 
   handleFullscreenClick = () => {
-    const { current } = this.containerRef;
-
-    if (current) {
-      if (this.state.fullscreen) {
-        screenfull.exit();
-      } else {
-        screenfull.request(current);
-      }
+    if (this.state.fullscreen) {
+      screenfull.exit();
+    } else {
+      screenfull.request(document.body);
     }
   };
 
@@ -65,15 +59,18 @@ class App extends Component {
   };
 
   handleSwatchOpen = () => {
-    this.setState(({ modalOpen }) => ({ modalOpen: !modalOpen }));
+    this.setState({ modalOpen: true });
+  };
+
+  handleSwatchClose = () => {
+    this.setState({ modalOpen: false });
   };
 
   handleColourSelect = (colour) => {
-    console.log(colour);
-    this.setState(({ modalOpen}) => ({
+    this.setState({
       modalOpen: false,
       selectedColour: colour.hex,
-    }));
+    });
   };
 
   componentDidMount() {
@@ -86,7 +83,7 @@ class App extends Component {
 
   render() {
     return (
-      <Container innerRef={this.containerRef}>
+      <Container>
         <Controls>
           <IconButton size="large" color="primary" onClick={this.handleSwatchOpen}>
             <Create />
@@ -101,7 +98,7 @@ class App extends Component {
         </Controls>
         <Canvas />
         <Modal open={this.state.modalOpen}>
-          <Centered tabIndex="-1">
+          <Centered onClick={this.handleSwatchClose} tabIndex="-1">
             <CirclePicker onChangeComplete={this.handleColourSelect} colors={hues} />
           </Centered>
         </Modal>
