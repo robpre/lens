@@ -6,7 +6,7 @@ import './index.css';
 import App from './App';
 import registerServiceWorker from './registerServiceWorker';
 window.onerror = (err) => {
-  document.getElementById('root').innerHTML = `<pre>${err.message}\n${err.stack}</pre>`;
+  document.getElementById('root').innerHTML = `<pre>${err}\n${err.message}\n${err.stack}${JSON.stringify(err, null, '  ')}</pre>`;
 };
 
 ReactDOM.render(<App />, document.getElementById('root'));
