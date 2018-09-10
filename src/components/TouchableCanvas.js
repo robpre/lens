@@ -11,10 +11,10 @@ const forwardedRef = Component => forwardRef((props, ref) => <Component {...prop
 
 class TouchableCanvas extends Component {
   handleInteraction = evt => {
-    let start = false;
+    const start = evt.type === 'touchstart' || evt.type === 'mousedown';
+    const end = evt.type === 'touchend' || evt.type === 'mouseup';
 
-    if (evt.type === 'touchstart' || evt.type === 'mousedown') {
-      start = true;
+    if (start) {
       this.started = true;
     }
 
@@ -22,7 +22,7 @@ class TouchableCanvas extends Component {
       let location;
 
       if (evt.type === 'touchstart' || evt.type === 'touchmove' || evt.type === 'touchend') {
-        const [ touch ] = evt.touches;
+        const [ touch ] = evt.changedTouches;
 
         if (touch) {
           location = getXYFromEvent(touch);
@@ -34,12 +34,13 @@ class TouchableCanvas extends Component {
       if (location) {
         this.props.onContactMove({
           start,
+          end,
           location,
         });
       }
     }
 
-    if (evt.type === 'touchend' || evt.type === 'mouseup') {
+    if (end) {
       this.started = false;
     }
   };
