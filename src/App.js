@@ -7,7 +7,7 @@ import FullscreenExit from '@material-ui/icons/FullscreenExit';
 import screenfull from 'screenfull';
 import styled from 'styled-components';
 import hexToHsl from 'hex-to-hsl';
-import { CirclePicker } from 'react-color';
+import CirclePicker from 'react-color/lib/Circle';
 
 import Canvas from './Canvas';
 

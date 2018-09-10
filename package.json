@@ -19,11 +19,14 @@
     "webrtc-adapter": "^6.3.2"
   },
   "devDependencies": {
-    "react-scripts": "1.1.5",
     "gh-pages": "1.2.0",
+    "react-scripts": "1.1.5",
+    "source-map-explorer": "^1.6.0",
     "version-bump-prompt": "4.1.0"
   },
   "scripts": {
+    "preanalyze": "npm run build",
+    "analyze": "source-map-explorer build/static/js/main.*",
     "release": "bump --tag --push --prompt",
     "predeploy": "npm run build",
     "deploy": "npm run deploy:only",
