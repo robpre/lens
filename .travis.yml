@@ -9,6 +9,7 @@ branches:
 cache:
   directories:
   - node_modules
+  - build
 install: npm install
 script:
 - npm run build
