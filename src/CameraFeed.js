@@ -54,7 +54,7 @@ export default class CameraFeed extends Component {
     return (
       <Fragment>
         <RenderError error={this.state.error} />
-        <Video autoPlay innerRef={this.video} playsInline />
+        <Video autoPlay innerRef={this.video} playsInline controls />
       </Fragment>
     );
   }
