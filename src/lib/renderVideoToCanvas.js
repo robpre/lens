@@ -1,7 +1,5 @@
-export default function renderVideoToCanvas(video, canvas) {
+export default function renderVideoToCanvas(video, canvas, ctx) {
   if (video.readyState === video.HAVE_ENOUGH_DATA) {
-    const ctx = canvas.getContext('2d');
-
     // horizontally center the camera image
     const sourceX = Math.max((video.videoWidth - canvas.width) / 2, 0);
     const sourceY = Math.max((video.videoHeight - canvas.height) / 2, 0);

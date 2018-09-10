@@ -4,11 +4,28 @@ import renderVideoToCanvas from '../lib/renderVideoToCanvas';
 import CameraFeed from './CameraFeed';
 import TouchableCanvas from './TouchableCanvas';
 
+const getPixel = (image, x, y) => {
+  // target = MAX * (y - 1) + x
+  let rIndex = (image.width * (y - 1)) + x;
+  // adjust for 0 indexed array
+  rIndex -= 1;
+  // multiply by colour width: 4
+  rIndex *= 4;
+
+  const r = image.data[rIndex];
+  const g = image.data[rIndex + 1];
+  const b = image.data[rIndex + 2];
+  const a = image.data[rIndex + 3];
+
+  return { r, g, b, a };
+};
+
 export default class CameraCanvas extends Component {
   constructor(props) {
     super(props);
 
     this._canvas = createRef();
+    this.points = [];
   }
 
   get canvas() {
@@ -23,20 +40,35 @@ export default class CameraCanvas extends Component {
     const { video, canvas } = this;
 
     if (canvas && video) {
+      const ctx = canvas.getContext('2d');
       // update canvas
       canvas.width = canvas.scrollWidth;
       canvas.height = canvas.scrollHeight;
 
-      renderVideoToCanvas(video, canvas);
+      renderVideoToCanvas(video, canvas, ctx);
 
-      if (this.dragging) {
-        const ctx = canvas.getContext('2d');
+      if (1 || this.dragging) {
+        let image;
+        if (this.dragging) {
+          image = this.getContextSnapshot(ctx);
+        }
 
-        ctx.fillStyle = 'red';
         for(let i = 0; i < this.points.length; i++) {
-          const { x, y } = this.points[i];
+          const point = this.points[i];
+          const { x, y } = point;
 
-          ctx.fillRect(x, y, 5, 5);
+          if (this.dragging || !point.colour) {
+            // performance?
+            if (!image) {
+              image = this.getContextSnapshot(ctx);
+            }
+            point.colour = getPixel(image, x, y);
+          }
+
+          const { r, g, b } = point.colour;
+
+          ctx.fillStyle = `rgba(${r}, ${g}, ${b})`;
+          ctx.fillRect(x - 12, y - 12, 24, 24);
         }
       }
     }
@@ -48,12 +80,12 @@ export default class CameraCanvas extends Component {
     this.video = video;
   };
 
-  handleContactMove = ({ start, end, location }) => {
+  handleContactMove = ({ start, end, point }) => {
     if (start) {
       this.points = [];
     }
 
-    this.points.push(location);
+    this.points.push(point);
 
     if (start) {
       this.dragging = true;
@@ -62,11 +94,10 @@ export default class CameraCanvas extends Component {
     }
   };
 
-  getContextSnapshot() {
+  getContextSnapshot(ctx) {
     const { canvas, video } = this;
 
     if (canvas && video) {
-      const ctx = canvas.getContext('2d');
       // only get the data for the video
       const width = Math.min(video.videoWidth, canvas.width);
       const height = Math.min(video.videoHeight, canvas.height);
