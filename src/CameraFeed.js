@@ -45,7 +45,10 @@ export default class CameraFeed extends Component {
       return this.setState({ error });
     }
 
-    this.video.current.srcObject = stream;
+    const { current: video } = this.video;
+
+    video.srcObject = stream;
+    video.play();
 
     this.props.onVideoFeed(this.video.current);
   }
@@ -54,7 +57,7 @@ export default class CameraFeed extends Component {
     return (
       <Fragment>
         <RenderError error={this.state.error} />
-        <Video autoPlay innerRef={this.video} playsInline controls />
+        <Video autoPlay innerRef={this.video} playsInline controls muted />
       </Fragment>
     );
   }
