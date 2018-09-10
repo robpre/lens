@@ -19,10 +19,14 @@ const Container = styled.div`
   height: 100%;
   position: relative;
   font-size: 0;
+  overflow: hidden;
 `;
 
 const Controls = styled.div`
   width: 100%;
+  top: 0;
+  left: 0;
+  z-index: 1;
   position: absolute;
   display: flex;
   justify-content: space-between;
@@ -43,6 +47,7 @@ class App extends Component {
     this.state = {
       fullscreen: false,
       modalOpen: false,
+      selectedColour: '#f6bfff',
     };
   }
 
@@ -100,7 +105,7 @@ class App extends Component {
             ) : <div />
           }
         </Controls>
-        <Canvas />
+        <Canvas replaceColour={this.state.selectedColour} />
         <Modal open={this.state.modalOpen}>
           <Centered onClick={this.handleSwatchClose} tabIndex="-1">
             <CirclePicker onChangeComplete={this.handleColourSelect} colors={hues} />
