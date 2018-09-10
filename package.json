@@ -10,6 +10,7 @@
   "dependencies": {
     "@material-ui/core": "^3.0.3",
     "@material-ui/icons": "^3.0.1",
+    "hex-to-hsl": "^1.0.2",
     "react": "16.5.0",
     "react-color": "^2.14.1",
     "react-dom": "16.5.0",
