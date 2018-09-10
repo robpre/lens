@@ -43,6 +43,7 @@ class App extends Component {
     this.state = {
       fullscreen: false,
       modalOpen: false,
+      selectedColour: '#f6bfff',
     };
   }
 
@@ -100,7 +101,7 @@ class App extends Component {
             ) : <div />
           }
         </Controls>
-        <Canvas />
+        <Canvas replaceColour={this.state.selectedColour} />
         <Modal open={this.state.modalOpen}>
           <Centered onClick={this.handleSwatchClose} tabIndex="-1">
             <CirclePicker onChangeComplete={this.handleColourSelect} colors={hues} />

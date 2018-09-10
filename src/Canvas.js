@@ -2,6 +2,7 @@ import React, { createRef, Component, Fragment } from 'react';
 import styled from 'styled-components';
 
 import CameraFeed from './CameraFeed';
+import renderVideoToCanvas from './lib/renderVideoToCanvas';
 
 const StyledCanvas = styled.canvas`
   width: 100%;
@@ -20,27 +21,23 @@ export default class Canvas extends Component {
   }
 
   update = delta => {
-    if (this.canvas.current && this.video) {
-      const {
-        video,
-        canvas: {
-          current: canvas
-        }
-      } = this;
-      const ctx = this.canvas.current.getContext('2d');
+    const {
+      video,
+      canvas: {
+        current: canvas
+      }
+    } = this;
 
+    if (canvas && video) {
+      // update canvas
       canvas.width = canvas.scrollWidth;
       canvas.height = canvas.scrollHeight;
 
-      if (video.readyState === video.HAVE_ENOUGH_DATA) {
-        // scale and horizontally center the camera image
-        const sourceX = Math.max((video.videoWidth - canvas.width) / 2, 0);
-        const sourceY = Math.max((video.videoHeight - canvas.height) / 2, 0);
-        const sourceWidth = canvas.width;
-        const sourceHeight = canvas.height;
+      renderVideoToCanvas(video, canvas);
 
-        ctx.drawImage(video, sourceX, sourceY, sourceWidth, sourceHeight, 0, 0, canvas.width, canvas.height);
-      }
+      const ctx = canvas.getContext('2d');
+
+
     }
 
     this.raf = requestAnimationFrame(this.update);
@@ -50,6 +47,8 @@ export default class Canvas extends Component {
     this.video = video;
   };
 
+
+
   componentWillUnmount() {
     cancelAnimationFrame(this.raf);
   }
@@ -58,7 +57,7 @@ export default class Canvas extends Component {
     return (
       <Fragment>
         <CameraFeed onVideoFeed={this.handleFeed} />
-        <StyledCanvas innerRef={this.canvas} />
+        <StyledCanvas  innerRef={this.canvas} />
       </Fragment>
     );
   }
