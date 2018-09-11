@@ -45,9 +45,6 @@ export default class CameraCanvas extends Component {
       canvas.width = canvas.scrollWidth;
       canvas.height = canvas.scrollHeight;
 
-      ctx.fillStyle = 'black';
-      ctx.fillRect(0, 0, canvas.width, canvas.height);
-
       renderVideoToCanvas(video, canvas, ctx);
 
       if (1 || this.dragging) {
@@ -70,7 +67,7 @@ export default class CameraCanvas extends Component {
 
           const { r, g, b } = point.colour;
 
-          ctx.fillStyle = `rgba(${r}, ${g}, ${b})`;
+          ctx.fillStyle = `rgb(${r}, ${g}, ${b})`;
           ctx.fillRect(x - 12, y - 12, 24, 24);
         }
       }
