@@ -1,10 +1,10 @@
 {
-  "name": "dyslexic-lens",
+  "name": "lens",
   "version": "0.7.2",
   "homepage": "https://lens.robpm.co.uk/",
   "repository": {
     "type": "git",
-    "url": "ssh://git@github.com/RpprRoger/dyslexic-lens"
+    "url": "ssh://git@github.com/RpprRoger/lens.git"
   },
   "private": true,
   "dependencies": {
