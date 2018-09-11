@@ -1,8 +1,12 @@
 import React, { createRef, Component, Fragment } from 'react';
+import rgbToHsl from 'rgb-to-hsl';
 
 import renderVideoToCanvas from '../lib/renderVideoToCanvas';
 import CameraFeed from './CameraFeed';
 import TouchableCanvas from './TouchableCanvas';
+
+const similar = (val, targetVal, fuzz) =>
+  (targetVal < val + fuzz && targetVal > val - fuzz);
 
 const getPixel = (image, x, y) => {
   // target = MAX * (y - 1) + x
@@ -45,31 +49,55 @@ export default class CameraCanvas extends Component {
       canvas.width = canvas.scrollWidth;
       canvas.height = canvas.scrollHeight;
 
+      ctx.fillStyle = this.props.replaceColour;
+      ctx.fillRect(0, 0, video.videoWidth, video.videoHeight);
+
       renderVideoToCanvas(video, canvas, ctx);
 
-      if (1 || this.dragging) {
-        let image;
-        if (this.dragging) {
-          image = this.getContextSnapshot(ctx);
-        }
+      const image = this.getContextSnapshot(ctx);
 
-        for(let i = 0; i < this.points.length; i++) {
-          const point = this.points[i];
-          const { x, y } = point;
+      if (image && image.data) {
+        if (1 || this.dragging) {
+          for(let i = 0; i < this.points.length; i++) {
+            const point = this.points[i];
+            const { x, y } = point;
 
-          if (this.dragging || !point.colour) {
-            // performance?
-            if (!image) {
-              image = this.getContextSnapshot(ctx);
+            if (this.dragging || !point.colour) {
+              point.colour = getPixel(image, x, y);
             }
-            point.colour = getPixel(image, x, y);
+
+            const { r, g, b } = point.colour;
+
+            ctx.fillStyle = `rgb(${r}, ${g}, ${b})`;
+            ctx.fillRect(x - 12, y - 12, 24, 24);
           }
-
-          const { r, g, b } = point.colour;
-
-          ctx.fillStyle = `rgb(${r}, ${g}, ${b})`;
-          ctx.fillRect(x - 12, y - 12, 24, 24);
         }
+
+        // if (this.points.length) {
+        //   for (let pixel = 0; pixel < image.data.length; pixel += 4) {
+        //     const r = image.data[pixel];
+        //     const g = image.data[pixel + 1];
+        //     const b = image.data[pixel + 2];
+        //     const pixelHsl = rgbToHsl(r, g, b);
+
+        //     for (let i = 0; i < this.points.length; i++) {
+        //       const { colour } = this.points[i];
+        //       const targetHsl = rgbToHsl(colour.r, colour.g, colour.b);
+
+        //       if (
+        //         similar(pixelHsl[0], targetHsl[0], 2) &&
+        //         similar(pixelHsl[1], targetHsl[1], 5) &&
+        //         similar(pixelHsl[2], targetHsl[2], 10)
+        //       ) {
+        //         image.data[pixel + 3] = 0;
+        //         break;
+        //       }
+        //     }
+        //   }
+
+        //   ctx.putImageData(image, 0, 0);
+        // }
+
       }
     }
 
