@@ -45,6 +45,9 @@ export default class CameraCanvas extends Component {
       canvas.width = canvas.scrollWidth;
       canvas.height = canvas.scrollHeight;
 
+      ctx.fillStyle = 'black';
+      ctx.fillRect(0, 0, canvas.width, canvas.height);
+
       renderVideoToCanvas(video, canvas, ctx);
 
       if (1 || this.dragging) {
