@@ -97,6 +97,7 @@ class App extends Component {
   };
 
   handleFullscreenChange = () => {
+    console.log("changing")
     this.setState({ fullscreen: screenfull.isFullscreen });
   };
 
@@ -125,14 +126,14 @@ class App extends Component {
   componentDidMount() {
     this.oldonerror = window.onerror;
     window.onerror = error => this.setState({ error });
-    if (screenfull.enabled) {
+    if (screenfull.isEnabled) {
       screenfull.on('change', this.handleFullscreenChange);
     }
   }
 
   componentWillUnmount() {
     window.onerror = this.oldonerror;
-    if (screenfull.enabled) {
+    if (screenfull.isEnabled) {
       screenfull.off('change', this.handleFullscreenChange);
     }
   }
@@ -147,10 +148,10 @@ class App extends Component {
             </IconButton>
           </OnTop>
           {
-            screenfull.enabled ? (
+            screenfull.isEnabled ? (
               <OnTop>
                 <IconButton size="medium" color="primary" onClick={this.handleFullscreenClick}>
-                  {this.state.fullscreen ?  <FullscreenExit /> : <Fullscreen />}
+                  {this.state.fullscreen ? <FullscreenExit /> : <Fullscreen />}
                 </IconButton>
               </OnTop>
             ) : <div />

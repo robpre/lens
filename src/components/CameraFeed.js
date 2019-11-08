@@ -25,7 +25,7 @@ export default class CameraFeed extends Component {
   }
 
   async componentDidMount() {
-    if (!(navigator.mediaDevices && navigator.mediaDevices.getUserMedia)) {
+    if (!navigator.mediaDevices || !navigator.mediaDevices.getUserMedia) {
       alert('There\'s no getUserMedia');
       return;
     }
@@ -52,7 +52,7 @@ export default class CameraFeed extends Component {
     video.srcObject = stream;
     video.play();
 
-    this.props.onVideoFeed(this.video.current);
+    this.props.onVideoFeed(video);
   }
 
   render() {
