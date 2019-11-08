@@ -1,5 +1,5 @@
 import React, { createRef, Component, Fragment } from 'react';
-import rgbToHsl from 'rgb-to-hsl';
+// import rgbToHsl from 'rgb-to-hsl';
 
 import renderVideoToCanvas from '../lib/renderVideoToCanvas';
 import CameraFeed from './CameraFeed';

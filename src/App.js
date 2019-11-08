@@ -142,14 +142,14 @@ class App extends Component {
       <Container fullscreen={this.state.fullscreen}>
         <Controls>
           <OnTop>
-            <IconButton size="large" color="primary" onClick={this.handleSwatchOpen}>
+            <IconButton size="medium" color="primary" onClick={this.handleSwatchOpen}>
               <Create />
             </IconButton>
           </OnTop>
           {
             screenfull.enabled ? (
               <OnTop>
-                <IconButton size="large" color="primary" onClick={this.handleFullscreenClick}>
+                <IconButton size="medium" color="primary" onClick={this.handleFullscreenClick}>
                   {this.state.fullscreen ?  <FullscreenExit /> : <Fullscreen />}
                 </IconButton>
               </OnTop>
