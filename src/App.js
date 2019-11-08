@@ -123,6 +123,7 @@ class App extends Component {
   }
 
   componentDidMount() {
+    this.oldonerror = window.onerror;
     window.onerror = error => this.setState({ error });
     if (screenfull.enabled) {
       screenfull.on('change', this.handleFullscreenChange);
@@ -130,6 +131,7 @@ class App extends Component {
   }
 
   componentWillUnmount() {
+    window.onerror = this.oldonerror;
     if (screenfull.enabled) {
       screenfull.off('change', this.handleFullscreenChange);
     }
