@@ -92,12 +92,11 @@ class App extends Component {
     if (this.state.fullscreen) {
       screenfull.exit();
     } else {
-      screenfull.request(document.body);
+      screenfull.request();
     }
   };
 
   handleFullscreenChange = () => {
-    console.log("changing")
     this.setState({ fullscreen: screenfull.isFullscreen });
   };
 

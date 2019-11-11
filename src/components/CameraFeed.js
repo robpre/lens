@@ -38,7 +38,6 @@ export default class CameraFeed extends Component {
           facingMode: {
             ideal: 'environment'
           },
-          width: { min: 1280, ideal: 1920 }
         }
       });
     } catch(error) {

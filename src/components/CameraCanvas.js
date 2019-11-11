@@ -1,150 +1,124 @@
-import React, { createRef, Component, Fragment } from 'react';
-// import rgbToHsl from 'rgb-to-hsl';
+import React, { Component, Fragment } from 'react';
 
-import renderVideoToCanvas from '../lib/renderVideoToCanvas';
+import {
+  createProgram,
+  createQuad,
+  createTexture,
+  resize,
+} from '../lib/webGLUtils';
 import CameraFeed from './CameraFeed';
 import TouchableCanvas from './TouchableCanvas';
-
-const similar = (val, targetVal, fuzz) =>
-  (targetVal < val + fuzz && targetVal > val - fuzz);
-
-const getPixel = (image, x, y) => {
-  // target = MAX * (y - 1) + x
-  let rIndex = (image.width * (y - 1)) + x;
-  // adjust for 0 indexed array
-  rIndex -= 1;
-  // multiply by colour width: 4
-  rIndex *= 4;
-
-  const r = image.data[rIndex];
-  const g = image.data[rIndex + 1];
-  const b = image.data[rIndex + 2];
-  const a = image.data[rIndex + 3];
-
-  return { r, g, b, a };
-};
+import { vs, fs } from './shaders';
 
 export default class CameraCanvas extends Component {
-  constructor(props) {
-    super(props);
-
-    this._canvas = createRef();
-    this.points = [];
-  }
-
-  get canvas() {
-    return this._canvas.current;
-  }
-
   componentDidMount() {
     this.raf = requestAnimationFrame(this.update);
   }
 
-  update = delta => {
-    const { video, canvas } = this;
+  initCanvas = (el) => {
+    const canvas = this.canvas = el;
+    const gl = this.gl = canvas.getContext('webgl2', {preserveDrawingBuffer: true});
 
-    if (canvas && video) {
-      const ctx = canvas.getContext('2d');
-      // update canvas
-      canvas.width = canvas.scrollWidth;
-      canvas.height = canvas.scrollHeight;
+    gl.enable(gl.BLEND);
+    gl.blendFunc(gl.SRC_ALPHA, gl.ONE_MINUS_SRC_ALPHA);
+    createQuad(gl);
 
-      ctx.fillStyle = this.props.replaceColour;
-      ctx.fillRect(0, 0, video.videoWidth, video.videoHeight);
+    const program = this.program = createProgram(gl, vs, fs);
 
-      renderVideoToCanvas(video, canvas, ctx);
+    gl.useProgram(program);
 
-      const image = this.getContextSnapshot(ctx);
+    this.colorToReplaceLocation = gl.getUniformLocation(program, 'colorToReplace');
+    this.thresholdSensitivityLocation = gl.getUniformLocation(program, 'thresholdSensitivity');
+    this.smoothingLocation = gl.getUniformLocation(program, 'smoothing');
+    this.initLocation = gl.getUniformLocation(program, 'init');
+  };
 
-      if (image && image.data) {
-        if (1 || this.dragging) {
-          for(let i = 0; i < this.points.length; i++) {
-            const point = this.points[i];
-            const { x, y } = point;
-
-            if (this.dragging || !point.colour) {
-              point.colour = getPixel(image, x, y);
-            }
-
-            const { r, g, b } = point.colour;
-
-            ctx.fillStyle = `rgb(${r}, ${g}, ${b})`;
-            ctx.fillRect(x - 12, y - 12, 24, 24);
-          }
-        }
-
-        // if (this.points.length) {
-        //   for (let pixel = 0; pixel < image.data.length; pixel += 4) {
-        //     const r = image.data[pixel];
-        //     const g = image.data[pixel + 1];
-        //     const b = image.data[pixel + 2];
-        //     const pixelHsl = rgbToHsl(r, g, b);
-
-        //     for (let i = 0; i < this.points.length; i++) {
-        //       const { colour } = this.points[i];
-        //       const targetHsl = rgbToHsl(colour.r, colour.g, colour.b);
-
-        //       if (
-        //         similar(pixelHsl[0], targetHsl[0], 2) &&
-        //         similar(pixelHsl[1], targetHsl[1], 5) &&
-        //         similar(pixelHsl[2], targetHsl[2], 10)
-        //       ) {
-        //         image.data[pixel + 3] = 0;
-        //         break;
-        //       }
-        //     }
-        //   }
-
-        //   ctx.putImageData(image, 0, 0);
-        // }
-
-      }
+  getSourceTexture = () => {
+    if (this.texture) {
+      return this.texture;
     }
 
-    this.raf = requestAnimationFrame(this.update);
+    if (this.video && this.gl) {
+      this.texture = createTexture(this.gl, this.video);
+    }
   };
+
+  update = delta => {
+    this.raf = requestAnimationFrame(this.update);
+    const { video, canvas, gl } = this;
+
+    if (!canvas || !video) {
+      return;
+    }
+
+    const { clientWidth: sw, clientHeight: sh } = video;
+    if (sw !== canvas.width || sh !== canvas.height) {
+      resize(gl, sw, sh);
+    }
+
+    const texture = this.getSourceTexture();
+
+    gl.bindTexture(gl.TEXTURE_2D, texture);
+    gl.texImage2D(gl.TEXTURE_2D, 0, gl.RGBA, gl.RGBA, gl.UNSIGNED_BYTE, video);
+
+    if (this.point) {
+      this.setSourceColour(this.point);
+      this.point = null;
+    }
+
+    gl.clear(gl.COLOR_BUFFER_BIT);
+    gl.drawArrays(gl.TRIANGLE_STRIP, 0, 4);
+  };
+
+  setSourceColour({ x, y }) {
+    const {
+      gl,
+      colorToReplaceLocation,
+      thresholdSensitivityLocation,
+      smoothingLocation,
+      initLocation,
+    } = this;
+
+    const pixels = new Uint8Array(4);
+    gl.readPixels(x, y, 1, 1, gl.RGBA, gl.UNSIGNED_BYTE, pixels);
+
+    const replaceCol = [];
+
+    pixels.slice(0, 3).forEach(pix => replaceCol.push(pix / 255));
+    console.log(replaceCol);
+
+    gl.uniform3fv(colorToReplaceLocation, new Float32Array(replaceCol));
+    gl.uniform1f(thresholdSensitivityLocation, 0.4);
+    gl.uniform1f(smoothingLocation, 0.05);
+    gl.uniform1i(initLocation, 1);
+  }
 
   handleFeed = video => {
     this.video = video;
   };
 
-  handleContactMove = ({ start, end, point }) => {
-    if (start) {
-      this.points = [];
-    }
+  handleContactMove = ({ point }) => {
+    const {
+      gl,
+    } = this;
 
-    this.points.push(point);
-
-    if (start) {
-      this.dragging = true;
-    } else if (end) {
-      this.dragging = false;
+    if (gl && point) {
+      this.point = point;
     }
   };
 
-  getContextSnapshot(ctx) {
-    const { canvas, video } = this;
-
-    if (canvas && video) {
-      // only get the data for the video
-      const width = Math.min(video.videoWidth, canvas.width);
-      const height = Math.min(video.videoHeight, canvas.height);
-
-      if (width > 0 && height > 0) {
-        return ctx.getImageData(0, 0, width, height);
-      }
-    }
-  }
-
   componentWillUnmount() {
     cancelAnimationFrame(this.raf);
+    if (this.gl && this.program) {
+      this.gl.deleteProgram(this.program);
+    }
   }
 
   render() {
     return (
       <Fragment>
         <CameraFeed onVideoFeed={this.handleFeed} />
-        <TouchableCanvas innerRef={this._canvas} onContactMove={this.handleContactMove} />
+        <TouchableCanvas ref={this.initCanvas} onContactMove={this.handleContactMove} />
       </Fragment>
     );
   }
