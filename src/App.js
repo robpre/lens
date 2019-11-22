@@ -82,7 +82,12 @@ class App extends Component {
     this.state = {
       fullscreen: false,
       modalOpen: false,
-      selectedColour: '#f6bfff',
+      selectedColour: {
+        "r": 215,
+        "g": 191,
+        "b": 255,
+        "a": 1
+      },
       error: null,
       info: null,
     };
@@ -111,7 +116,7 @@ class App extends Component {
   handleColourSelect = (colour) => {
     this.setState({
       modalOpen: false,
-      selectedColour: colour.hex,
+      selectedColour: colour.rgb,
     });
   };
 

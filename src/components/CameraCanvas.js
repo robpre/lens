@@ -1,5 +1,5 @@
 import React, { Component, Fragment } from 'react';
-
+import styled from 'styled-components';
 import {
   createProgram,
   createQuad,
@@ -10,10 +10,24 @@ import CameraFeed from './CameraFeed';
 import TouchableCanvas from './TouchableCanvas';
 import { vs, fs } from './shaders';
 
+const Notify = styled.div`
+  background: ${props => props.c};
+  position: fixed;
+  top: 0;
+  left: 0;
+  height: 100px;
+  width: 100px;
+  z-index: 9999;
+`;
+
 export default class CameraCanvas extends Component {
   componentDidMount() {
     this.raf = requestAnimationFrame(this.update);
   }
+
+  state = {
+    c: '',
+  };
 
   initCanvas = (el) => {
     const canvas = this.canvas = el;
@@ -41,6 +55,8 @@ export default class CameraCanvas extends Component {
     if (this.video && this.gl) {
       this.texture = createTexture(this.gl, this.video);
     }
+
+    return this.texture;
   };
 
   update = delta => {
@@ -62,10 +78,20 @@ export default class CameraCanvas extends Component {
     gl.texImage2D(gl.TEXTURE_2D, 0, gl.RGBA, gl.RGBA, gl.UNSIGNED_BYTE, video);
 
     if (this.point) {
-      this.setSourceColour(this.point);
-      this.point = null;
+      if (this.initVal) {
+        this.disableChroma();
+      } else {
+        const success = this.setSourceColour(this.point);
+
+        if (success) {
+          this.point = null;
+        }
+      }
     }
 
+    const { r, g, b, a } = this.props.replaceColour;
+
+    gl.clearColor(r,g,b,a);
     gl.clear(gl.COLOR_BUFFER_BIT);
     gl.drawArrays(gl.TRIANGLE_STRIP, 0, 4);
   };
@@ -76,28 +102,58 @@ export default class CameraCanvas extends Component {
       colorToReplaceLocation,
       thresholdSensitivityLocation,
       smoothingLocation,
-      initLocation,
+      canvas,
     } = this;
+    const realX = x - canvas.offsetLeft;
+    const realY = y - canvas.offsetTop;
 
     const pixels = new Uint8Array(4);
-    gl.readPixels(x, y, 1, 1, gl.RGBA, gl.UNSIGNED_BYTE, pixels);
+    gl.readPixels(realX, realY, 1, 1, gl.RGBA, gl.UNSIGNED_BYTE, pixels);
 
     const replaceCol = [];
 
-    pixels.slice(0, 3).forEach(pix => replaceCol.push(pix / 255));
+    pixels.slice(0, 3).forEach(pix =>
+      replaceCol.push(parseFloat((pix / 255).toFixed(2)))
+    );
+
+    if (replaceCol.every(x => !x)) {
+      this.disableChroma();
+      return false;
+    }
     console.log(replaceCol);
+    this.setState({
+      c: `rgb(${replaceCol.map(x => x*255).join(',')})`
+    });
 
     gl.uniform3fv(colorToReplaceLocation, new Float32Array(replaceCol));
     gl.uniform1f(thresholdSensitivityLocation, 0.4);
     gl.uniform1f(smoothingLocation, 0.05);
-    gl.uniform1i(initLocation, 1);
+    this.enableChroma();
+
+    return true;
+  }
+
+  enableChroma() {
+    this.setInitVal(true);
+  }
+  disableChroma() {
+    this.setInitVal(false);
+  }
+
+  setInitVal(newVal) {
+    const { gl, initLocation } = this;
+    this.initVal = newVal;
+
+    gl.uniform1i(initLocation, newVal ? 1 : 0);
   }
 
   handleFeed = video => {
     this.video = video;
   };
 
-  handleContactMove = ({ point }) => {
+  handleContactMove = ({ point, end }) => {
+    if (!end) return;
+
     const {
       gl,
     } = this;
@@ -117,6 +173,7 @@ export default class CameraCanvas extends Component {
   render() {
     return (
       <Fragment>
+        <Notify c={this.state.c} />
         <CameraFeed onVideoFeed={this.handleFeed} />
         <TouchableCanvas ref={this.initCanvas} onContactMove={this.handleContactMove} />
       </Fragment>
