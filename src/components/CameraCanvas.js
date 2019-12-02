@@ -126,8 +126,8 @@ export default class CameraCanvas extends Component {
     });
 
     gl.uniform3fv(colorToReplaceLocation, new Float32Array(replaceCol));
-    gl.uniform1f(thresholdSensitivityLocation, 0.4);
-    gl.uniform1f(smoothingLocation, 0.05);
+    gl.uniform1f(thresholdSensitivityLocation, 0.5);
+    gl.uniform1f(smoothingLocation, 0.01);
     this.enableChroma();
 
     return true;
