@@ -82,7 +82,12 @@ class App extends Component {
     this.state = {
       fullscreen: false,
       modalOpen: false,
-      selectedColour: '#f6bfff',
+      selectedColour: {
+        "r": 215,
+        "g": 191,
+        "b": 255,
+        "a": 1
+      },
       error: null,
       info: null,
     };
@@ -92,7 +97,7 @@ class App extends Component {
     if (this.state.fullscreen) {
       screenfull.exit();
     } else {
-      screenfull.request(document.body);
+      screenfull.request();
     }
   };
 
@@ -111,7 +116,7 @@ class App extends Component {
   handleColourSelect = (colour) => {
     this.setState({
       modalOpen: false,
-      selectedColour: colour.hex,
+      selectedColour: colour.rgb,
     });
   };
 
@@ -123,14 +128,16 @@ class App extends Component {
   }
 
   componentDidMount() {
+    this.oldonerror = window.onerror;
     window.onerror = error => this.setState({ error });
-    if (screenfull.enabled) {
+    if (screenfull.isEnabled) {
       screenfull.on('change', this.handleFullscreenChange);
     }
   }
 
   componentWillUnmount() {
-    if (screenfull.enabled) {
+    window.onerror = this.oldonerror;
+    if (screenfull.isEnabled) {
       screenfull.off('change', this.handleFullscreenChange);
     }
   }
@@ -140,15 +147,15 @@ class App extends Component {
       <Container fullscreen={this.state.fullscreen}>
         <Controls>
           <OnTop>
-            <IconButton size="large" color="primary" onClick={this.handleSwatchOpen}>
+            <IconButton size="medium" color="primary" onClick={this.handleSwatchOpen}>
               <Create />
             </IconButton>
           </OnTop>
           {
-            screenfull.enabled ? (
+            screenfull.isEnabled ? (
               <OnTop>
-                <IconButton size="large" color="primary" onClick={this.handleFullscreenClick}>
-                  {this.state.fullscreen ?  <FullscreenExit /> : <Fullscreen />}
+                <IconButton size="medium" color="primary" onClick={this.handleFullscreenClick}>
+                  {this.state.fullscreen ? <FullscreenExit /> : <Fullscreen />}
                 </IconButton>
               </OnTop>
             ) : <div />

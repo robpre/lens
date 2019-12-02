@@ -3,8 +3,8 @@ import React, { Component, forwardRef } from 'react';
 import styled from 'styled-components';
 
 const getXYFromEvent = (evt) => ({
-  x: Math.round(evt.pageX),
-  y: Math.round(evt.pageY),
+  x: Math.round(evt.clientX),
+  y: Math.round(evt.clientY),
 });
 
 const forwardedRef = Component => forwardRef((props, ref) => <Component {...props} forwardedRef={ref} />);
@@ -41,6 +41,7 @@ class TouchableCanvas extends Component {
     }
 
     if (end) {
+      // debugger;
       this.started = false;
     }
   };

@@ -25,7 +25,7 @@ export default class CameraFeed extends Component {
   }
 
   async componentDidMount() {
-    if (!(navigator.mediaDevices && navigator.mediaDevices.getUserMedia)) {
+    if (!navigator.mediaDevices || !navigator.mediaDevices.getUserMedia) {
       alert('There\'s no getUserMedia');
       return;
     }
@@ -38,7 +38,8 @@ export default class CameraFeed extends Component {
           facingMode: {
             ideal: 'environment'
           },
-          width: { min: 1280, ideal: 1920 }
+          width: window.outerWidth,
+          height: window.outerHeight
         }
       });
     } catch(error) {
@@ -52,14 +53,14 @@ export default class CameraFeed extends Component {
     video.srcObject = stream;
     video.play();
 
-    this.props.onVideoFeed(this.video.current);
+    this.props.onVideoFeed(video);
   }
 
   render() {
     return (
       <Fragment>
         <RenderError error={this.state.error} />
-        <Video autoPlay playsInline innerRef={this.video} />
+        <Video autoPlay playsInline ref={this.video} />
       </Fragment>
     );
   }
